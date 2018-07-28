@@ -5,11 +5,15 @@ namespace Linq.GraphQL.Context
     using System.Collections.Generic;
     using System.Text;
 
-    public abstract class GraphQLContext
+    public abstract class GraphQLContext : IDisposable
     {
         private readonly TypeCache<GraphQLSet> SetCache = new TypeCache<GraphQLSet>();
 
-        public GraphQLSet<T> EntitySet<T>()
+        public void Dispose()
+        {
+        }
+
+        public GraphQLSet<T> Set<T>()
         {
             var genericSetType = typeof(GraphQLSet<T>);
             if (SetCache.TryGet(genericSetType, out var set))

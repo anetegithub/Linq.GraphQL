@@ -1,27 +1,33 @@
 namespace Linq.GraphQL.Context
 {
-    using Bars.Linq.Async;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Linq.GraphQL.Provider;
 
-    public sealed class GraphQLSet<T> : GraphQLSet, IAsyncQueryable<T>
+    public sealed class GraphQLSet<T> : GraphQLSet, IQueryable<T>
     {
-        public Type ElementType => this.GetType();
+        public GraphQLSet()
+        {
+            this.Expression = Expression.Constant(this);
+        }
+
+        public GraphQLSet(Expression expression)
+        {
+            this.Expression = expression;
+        }
+
+        public Type ElementType => typeof(T);
 
         public Expression Expression { get; private set; }
 
-        public IQueryProvider Provider { get; private set; }
+        public IQueryProvider Provider { get; } = new GraphQLProvider();
 
         public IEnumerator<T> GetEnumerator() => Provider.Execute<IQueryable<T>>(Expression).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-        public IAsyncQueryProvider<T> AsyncProvider { get; private set; }
-
-        public IAsyncEnumerator<T> GetAsyncEnumerator() => AsyncProvider.AsyncExecute(Expression).GetAsyncEnumerator();
     }
 
     public abstract class GraphQLSet
