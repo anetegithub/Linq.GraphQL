@@ -1,6 +1,6 @@
 ﻿namespace Linq.GraphQL.DTO
 {
-    public class GrapQLResponse<T>
+    public class GraphQLResponse<T>
     {
         public Metadata Meta { get; set; }
 

@@ -1,15 +1,18 @@
 ﻿namespace Linq.GraphQL.Provider
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Linq.GraphQL.DTO;
 
-    public class LazyEnumerator<T> : IEnumerator<T>
+    public class GrapQLResponseEnumerator<T> : IEnumerator<T>
     {
-        private Task<IEnumerable<T>> deffered;
+        private Task<GraphQLResponse<T>> deffered;
+        GraphQLResponse<T> response;
         IEnumerator<T> enumeratorFromDeffered;
 
-        public LazyEnumerator(Task<IEnumerable<T>> deffered)
+        public GrapQLResponseEnumerator(Task<GraphQLResponse<T>> deffered)
         {
             this.deffered = deffered;
         }
@@ -47,7 +50,15 @@
             if (enumeratorFromDeffered == null)
             {
                 deffered.Wait();
-                enumeratorFromDeffered = deffered.Result.GetEnumerator();
+                this.response = deffered.Result;
+                if (this.response == null)
+                    throw new NullReferenceException($"the response from server is null");
+
+                var err = this.response.Meta.Error;
+                if (err != null)
+                    throw new Exception(err.Message);
+
+                this.enumeratorFromDeffered = (this.response.Data as IEnumerable<T>).GetEnumerator();
             }
         }
     }

@@ -14,10 +14,10 @@
     {
         public override object Materialize(GraphQLQueryTree queryTree, string connectionString)
         {
-            return new LazyEnumerator<T>(SendRequest(queryTree, connectionString));
+            return new GrapQLResponseEnumerator<T>(SendRequest(queryTree, connectionString));
         }
 
-        private async Task<IEnumerable<T>> SendRequest(GraphQLQueryTree queryTree, string uri)
+        private async Task<GraphQLResponse<T>> SendRequest(GraphQLQueryTree queryTree, string uri)
         {
             using (var client = new HttpClient())
             {
@@ -28,8 +28,8 @@
                     if (postTask.IsSuccessStatusCode)
                     {
                         var data = await postTask.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeAnonymousType(data, new GrapQLResponse<T>());
-                        return result.Data;
+                        var result = JsonConvert.DeserializeAnonymousType(data, new GraphQLResponse<T>());
+                        return result;
                     }
                     else return default;
                 }
