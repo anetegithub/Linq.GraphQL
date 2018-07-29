@@ -5,6 +5,7 @@ using Linq.GraphQL.Context;
 using Linq.GraphQL.Demo.Entities;
 using Linq.GraphQL.QueryTree;
 using Linq.GraphQL.Serialization;
+using Newtonsoft.Json;
 
 namespace Linq.GraphQL.Demo
 {
@@ -13,22 +14,22 @@ namespace Linq.GraphQL.Demo
         static void Main(string[] args)
         {
             //threads {
-            //  id,
+            //    id,
             //  title,
             //  user {
-            //    id,
+            //        id,
             //    username
             //  },
             //  posts(body__contains: "hello") {
-            //    body,
+            //        body,
             //    user {
-            //      username
+            //            username
             //    },
             //    created_at
             //  }
             //}
 
-            using (var ctx = new NodalContext())
+            using (var ctx = new NodalContext("http://graphql.nodaljs.com/graph"))
             {
                 var data = ctx.Threads.Select(t => new
                 {
@@ -46,10 +47,11 @@ namespace Linq.GraphQL.Demo
                         p.Created
                     })
                 });
-
+                
                 foreach (var item in data)
                 {
-                    Json
+                    var json = JsonConvert.SerializeObject(item);
+                    Console.WriteLine(json);
                 }
             }
 

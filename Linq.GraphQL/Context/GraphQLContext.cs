@@ -1,17 +1,38 @@
 namespace Linq.GraphQL.Context
 {
-    using Linq.GraphQL.Utility;
     using System;
-    using System.Collections.Generic;
-    using System.Text;
+    using FastMember;
+    using Linq.GraphQL.Extensions;
+    using Linq.GraphQL.Utility;
 
     public abstract class GraphQLContext : IDisposable
     {
-        private readonly TypeCache<GraphQLSet> SetCache = new TypeCache<GraphQLSet>();
+        private readonly TypeAccessor typeAccessor;
 
-        public void Dispose()
+        private readonly string connectionString;
+        public GraphQLContext(string connectionString)
         {
+            this.connectionString = connectionString;
+            typeAccessor = TypeAccessor.Create(this.GetType(), true);
+            this.BindConnectionString();
         }
+
+        private void BindConnectionString()
+        {
+            foreach (var member in typeAccessor.GetMembers())
+            {
+                if (typeof(GraphQLSet).IsAssignableFrom(member.Type))
+                {
+                    typeAccessor[this, member.Name] = TypeAccessor.Create(member.Type).CreateNew();
+                    if (typeAccessor[this, member.Name] is GraphQLSet memberSet)
+                    {
+                        memberSet.ConnectionString = connectionString;
+                    }
+                }
+            }
+        }
+
+        private readonly TypeCache<GraphQLSet> SetCache = new TypeCache<GraphQLSet>();
 
         public GraphQLSet<T> Set<T>()
         {
@@ -29,5 +50,7 @@ namespace Linq.GraphQL.Context
 
             throw new Exception($"Невозможн получить и создать источник сущности {typeof(T)}");
         }
+
+        public void Dispose() { }
     }
 }

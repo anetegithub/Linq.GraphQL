@@ -10,7 +10,7 @@
         public new GraphQLQueryTree Visit(Expression node)
         {
             var result = base.Visit(node);
-            return this.QueryTree;
+            return new GraphQLQueryTree();
         }
     }
 }

@@ -7,13 +7,13 @@
     using System.Text;
     using Linq.GraphQL.QueryTree;
 
-    public class QueryTreeSerializer : IDisposable
+    public class GraphQLQueryTreeSerializer : IDisposable
     {
-        private readonly Entity entity;
+        private readonly GraphQLQueryTree entity;
         private StringBuilder result = new StringBuilder();
         private int level = 0;
 
-        public QueryTreeSerializer(Entity entity)
+        public GraphQLQueryTreeSerializer(GraphQLQueryTree entity)
         {
             this.entity = entity;
         }
@@ -21,7 +21,7 @@
         public string Serialize()
         {
             if (result.ToString() == "EOL")
-                throw new ObjectDisposedException($"Current {nameof(QueryTreeSerializer)} disposed!");
+                throw new ObjectDisposedException($"Current {nameof(GraphQLQueryTreeSerializer)} disposed!");
 
             this.SerializeEntity(this.entity);
 
