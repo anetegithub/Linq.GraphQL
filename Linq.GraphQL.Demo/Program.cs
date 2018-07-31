@@ -27,8 +27,17 @@ namespace Linq.GraphQL.Demo
                     }).Where(p => !p.Body.Contains("hello"))
                 }).Where(x => x.Id > 1);
 
+                Console.WriteLine("sync?");
+                bool typed = false;
+
                 foreach (var item in data)
                 {
+                    if (!typed)
+                    {
+                        typed = true;
+                        Console.WriteLine("Typed result:");
+                    }
+
                     var json = JsonConvert.SerializeObject(item);
                     Console.WriteLine();
                     Console.WriteLine();

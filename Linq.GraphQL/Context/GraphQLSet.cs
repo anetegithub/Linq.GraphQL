@@ -37,7 +37,7 @@ namespace Linq.GraphQL.Context
             set
             {
                 this.connectionString = value;
-                this.Provider = new GraphQLProvider(this.connectionString, this.GraphQLContext);
+                this.Provider = new GraphQLProvider(this.connectionString, this.GraphQLContext, this.QueryReport, this.MetaReport);
             }
         }
     }
@@ -47,10 +47,14 @@ namespace Linq.GraphQL.Context
         public GraphQLSet<T> Generic<T>() => this as GraphQLSet<T>;
 
         /// <summary>
-        /// здесь происходит неявная инициализация, нахуя?
+        /// Р·РґРµСЃСЊ РїСЂРѕРёСЃС…РѕРґРёС‚ РЅРµСЏРІРЅР°СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ, РЅР°С…СѓСЏ?
         /// </summary>
         internal abstract string ConnectionString { get; set; }
 
         internal GraphQLContext GraphQLContext { get; set; }
+
+        public bool QueryReport { get; set; }
+
+        public bool MetaReport { get; set; }
     }
 }

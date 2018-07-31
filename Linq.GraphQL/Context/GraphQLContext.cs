@@ -8,10 +8,16 @@ namespace Linq.GraphQL.Context
     public abstract class GraphQLContext : IDisposable
     {
         internal readonly TypeAccessor typeAccessor;
+        
+        public bool QueryReport { get; set; }
+
+        public bool MetaReport { get; set; }
 
         private readonly string connectionString;
-        public GraphQLContext(string connectionString)
+        public GraphQLContext(string connectionString, bool reportQueryText = true, bool reportMetaData = true)
         {
+            this.QueryReport = reportQueryText;
+            this.MetaReport = reportMetaData;
             this.connectionString = connectionString;
             typeAccessor = TypeAccessor.Create(this.GetType(), true);
             this.BindConnectionString();
@@ -28,6 +34,8 @@ namespace Linq.GraphQL.Context
 
                     var grapQLSetProperty = setProperty as GraphQLSet;
                     grapQLSetProperty.GraphQLContext = this;
+                    grapQLSetProperty.QueryReport = this.QueryReport;
+                    grapQLSetProperty.MetaReport = this.MetaReport;
                     grapQLSetProperty.ConnectionString = connectionString;
 
                     typeAccessor[this, member.Name] = setProperty;

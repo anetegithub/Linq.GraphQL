@@ -11,12 +11,16 @@ namespace Linq.GraphQL.Provider
     public class GraphQLProvider : IQueryProvider
     {
         private readonly string uri;
+        private readonly bool QueryReport;
+        private readonly bool MetaReport;
         private GraphQLContext graphQLContext;
 
-        public GraphQLProvider(string connectionString, GraphQLContext graphQLContext)
+        public GraphQLProvider(string connectionString, GraphQLContext graphQLContext, bool QueryReport, bool MetaReport)
         {
             this.uri = connectionString;
             this.graphQLContext = graphQLContext;
+            this.QueryReport = QueryReport;
+            this.MetaReport = MetaReport;
         }
 
         public IQueryable CreateQuery(Expression expression)
@@ -29,6 +33,8 @@ namespace Linq.GraphQL.Provider
             return new GraphQLSet<TElement>(expression)
             {
                 GraphQLContext = graphQLContext,
+                QueryReport = QueryReport,
+                MetaReport = MetaReport,
                 ConnectionString = uri
             };
         }
@@ -51,7 +57,7 @@ namespace Linq.GraphQL.Provider
 
             var materializer = (GraphQLQueryTreeMaterializer)materializeType.New();
 
-            return (TResult)materializer.Materialize(query, uri);
+            return (TResult)materializer.Materialize(query, uri, this.QueryReport, this.MetaReport);
         }
         
         private bool IsSupported<T>() => typeof(IEnumerator).IsAssignableFrom(typeof(T));

@@ -12,8 +12,13 @@ namespace Linq.GraphQL.Provider
 
     public class GraphQLQueryTreeMaterializer<T> : GraphQLQueryTreeMaterializer
     {
-        public override object Materialize(GraphQLQueryTree queryTree, string connectionString)
+        private bool queryReport;
+        private bool metaReport;
+
+        public override object Materialize(GraphQLQueryTree queryTree, string connectionString, bool queryReport, bool metaReport)
         {
+            this.queryReport = queryReport;
+            this.metaReport = metaReport;
             return new GrapQLResponseEnumerator<T>(SendRequest(queryTree, connectionString));
         }
 
@@ -24,6 +29,16 @@ namespace Linq.GraphQL.Provider
                 using (var querySerializer = new GraphQLQueryTreeSerializer(queryTree))
                 {
                     var query = querySerializer.Serialize();
+
+                    if (queryReport)
+                    {
+                        System.Console.WriteLine("query:");
+                        System.Console.WriteLine();
+                        System.Console.WriteLine(query);
+                        System.Console.WriteLine();
+                        System.Console.WriteLine();
+                    }
+
                     var content = new StringContent(query, Encoding.UTF8, "application/json");
                     var postTask = await client.PostAsync(uri, content);
                     if (postTask.IsSuccessStatusCode)
@@ -33,6 +48,16 @@ namespace Linq.GraphQL.Provider
                         {
                             ContractResolver = new JsonIQueryableContractResolver()
                         });
+                        
+                        if (metaReport)
+                        {
+                            System.Console.WriteLine("meta:");
+                            System.Console.WriteLine();
+                            System.Console.WriteLine(JsonConvert.SerializeObject(result.Meta));
+                            System.Console.WriteLine();
+                            System.Console.WriteLine();
+                        }
+
                         return result;
                     }
                     else return default;
@@ -43,6 +68,6 @@ namespace Linq.GraphQL.Provider
 
     public abstract class GraphQLQueryTreeMaterializer
     {
-        public abstract object Materialize(GraphQLQueryTree queryTree, string connectionString);
+        public abstract object Materialize(GraphQLQueryTree queryTree, string connectionString, bool queryReport, bool metaReport);
     }
 }

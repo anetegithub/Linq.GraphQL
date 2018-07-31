@@ -1,4 +1,4 @@
-﻿namespace Linq.GraphQL.Demo
+namespace Linq.GraphQL.Demo
 {
     using Linq.GraphQL.Context;
     using Linq.GraphQL.Demo.Entities;
