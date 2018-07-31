@@ -1,6 +1,7 @@
-﻿namespace Linq.GraphQL.QueryTree
+namespace Linq.GraphQL.QueryTree
 {
     using System;
+    using System.Collections.Generic;
 
     public class GraphQLQueryTree : Entity
     {
@@ -16,9 +17,9 @@
                 return true;
             }
 
-            finded = Descendant(CLRType, finded);
+            finded = Descendant(CLRType, this);
 
-            return finded == null;
+            return finded != null;
         }
 
         private Entity Descendant(Type CLRType, Entity entity)
@@ -40,6 +41,38 @@
             }
 
             return default;
+        }
+
+        public bool TryFindPath(Type CLRType, out LinkedList<Property> finded)
+        {
+            finded = new LinkedList<Property>();
+
+            if (this.CLRType == null)
+                return false;
+
+            finded.AddLast(this);
+            if (this.CLRType == CLRType)
+                return true;
+
+            DescendantPath(CLRType, this, finded);
+
+            return finded.Count > 0;
+        }
+
+        private void DescendantPath(Type CLRType, Entity entity, LinkedList<Property> context)
+        {
+            foreach (var item in entity.Properties)
+            {
+                if (!(item is Entity entityItem))
+                    continue;
+
+                context.AddLast(item);
+
+                if (entityItem.CLRType == CLRType)
+                    return;
+
+                DescendantPath(CLRType, item as Entity, context);
+            }
         }
     }
 }

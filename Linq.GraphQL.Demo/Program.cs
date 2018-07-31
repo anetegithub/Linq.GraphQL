@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Linq.GraphQL.Context;
@@ -40,12 +40,12 @@ namespace Linq.GraphQL.Demo
                         t.User.Id,
                         t.User.UserName
                     },
-                    posts = ctx.Posts.Where(p => p.Body.Contains("hello")).Select(p => new
+                    posts = ctx.Posts.Select(p => new
                     {
                         p.Body,
                         user = p.User.UserName,
                         p.Created
-                    })
+                    }).Where(p => !p.Body.Contains("hello"))                    
                 }).Where(x => x.Id > 1);
                 
                 foreach (var item in data)

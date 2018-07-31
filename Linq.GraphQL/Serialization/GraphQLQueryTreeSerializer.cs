@@ -1,4 +1,4 @@
-﻿namespace Linq.GraphQL.Serialization
+namespace Linq.GraphQL.Serialization
 {
     using System;
     using System.Collections;
@@ -74,7 +74,7 @@
 
             foreach (var prop in filter.Name)
             {
-                property += prop.Name + Filter.Delimiter;
+                property += prop.Name.ToLowerInvariant() + Filter.Delimiter;
             }
 
             if (filter.Operation == Operation.equlas)

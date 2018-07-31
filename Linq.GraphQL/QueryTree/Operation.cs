@@ -1,4 +1,4 @@
-﻿namespace Linq.GraphQL.QueryTree
+namespace Linq.GraphQL.QueryTree
 {
     public enum Operation
     {
@@ -6,6 +6,7 @@
         @is,
         not,
         lt,
+        lte,
         gt,
         gte,
         contains,

@@ -1,4 +1,4 @@
-﻿namespace Linq.GraphQL.Provider
+namespace Linq.GraphQL.Provider
 {
     using System;
     using System.Collections;
@@ -55,6 +55,7 @@
         }
         
         private bool IsSupported<T>() => typeof(IEnumerator).IsAssignableFrom(typeof(T));
+
         private Type DataType<T>() => typeof(T).GetGenericArguments().First();
     }
 }
