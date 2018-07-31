@@ -1,4 +1,4 @@
-﻿namespace Linq.GraphQL.Provider
+namespace Linq.GraphQL.Provider
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -23,12 +23,16 @@
             {
                 using (var querySerializer = new GraphQLQueryTreeSerializer(queryTree))
                 {
-                    var content = new StringContent(querySerializer.Serialize(), Encoding.UTF8, "application/json");
+                    var query = querySerializer.Serialize();
+                    var content = new StringContent(query, Encoding.UTF8, "application/json");
                     var postTask = await client.PostAsync(uri, content);
                     if (postTask.IsSuccessStatusCode)
                     {
-                        var data = await postTask.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeAnonymousType(data, new GraphQLResponse<T>());
+                        var data = await postTask.Content.ReadAsStringAsync();                        
+                        var result = JsonConvert.DeserializeAnonymousType(data, new GraphQLResponse<T>(),new JsonSerializerSettings
+                        {
+                            ContractResolver = new JsonIQueryableContractResolver()
+                        });
                         return result;
                     }
                     else return default;
