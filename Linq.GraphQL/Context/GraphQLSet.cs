@@ -11,7 +11,7 @@ namespace Linq.GraphQL.Context
     {
         public GraphQLSet()
         {
-            this.Expression = Expression.Constant(this);
+            this.Expression = Expression.Constant(this);            
         }
 
         public GraphQLSet(Expression expression)
@@ -37,7 +37,7 @@ namespace Linq.GraphQL.Context
             set
             {
                 this.connectionString = value;
-                this.Provider = new GraphQLProvider(this.connectionString);
+                this.Provider = new GraphQLProvider(this.connectionString, this.GraphQLContext);
             }
         }
     }
@@ -46,6 +46,11 @@ namespace Linq.GraphQL.Context
     {
         public GraphQLSet<T> Generic<T>() => this as GraphQLSet<T>;
 
+        /// <summary>
+        /// здесь происходит не€вна€ инициализаци€, наху€?
+        /// </summary>
         internal abstract string ConnectionString { get; set; }
+
+        internal GraphQLContext GraphQLContext { get; set; }
     }
 }

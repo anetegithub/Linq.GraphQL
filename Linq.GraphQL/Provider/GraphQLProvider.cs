@@ -2,28 +2,21 @@
 {
     using System;
     using System.Collections;
-    using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
-    using FastMember;
     using Linq.GraphQL.Context;
     using Linq.GraphQL.Extensions;
-    using Linq.GraphQL.QueryTree;
-    using Linq.GraphQL.Serialization;
     using Linq.GraphQL.Visitors;
-    using Newtonsoft.Json;
 
     public class GraphQLProvider : IQueryProvider
     {
         private readonly string uri;
+        private GraphQLContext graphQLContext;
 
-        public GraphQLProvider(string connectionString)
+        public GraphQLProvider(string connectionString, GraphQLContext graphQLContext)
         {
             this.uri = connectionString;
+            this.graphQLContext = graphQLContext;
         }
 
         public IQueryable CreateQuery(Expression expression)
@@ -35,6 +28,7 @@
         {
             return new GraphQLSet<TElement>(expression)
             {
+                GraphQLContext = graphQLContext,
                 ConnectionString = uri
             };
         }
@@ -49,7 +43,7 @@
             if (!IsSupported<TResult>())
                 return default;
 
-            var visitor = new GraphQLVisitor();
+            var visitor = new GraphQLVisitor(this.graphQLContext);
 
             var query = visitor.Visit(expression);
 

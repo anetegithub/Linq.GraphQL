@@ -46,7 +46,7 @@ namespace Linq.GraphQL.Demo
                         user = p.User.UserName,
                         p.Created
                     })
-                });
+                }).Where(x => x.Id > 1);
                 
                 foreach (var item in data)
                 {

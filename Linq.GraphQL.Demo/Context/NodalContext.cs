@@ -13,6 +13,8 @@
 
         public GraphQLSet<Thread> Threads { get; set; }
 
+        public GraphQLSet<Thread> Pizdosisbl { get; set; }
+
         public GraphQLSet<Post> Posts { get; set; }
     }
 }

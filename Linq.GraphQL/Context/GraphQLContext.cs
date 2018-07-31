@@ -7,7 +7,7 @@ namespace Linq.GraphQL.Context
 
     public abstract class GraphQLContext : IDisposable
     {
-        private readonly TypeAccessor typeAccessor;
+        internal readonly TypeAccessor typeAccessor;
 
         private readonly string connectionString;
         public GraphQLContext(string connectionString)
@@ -23,11 +23,14 @@ namespace Linq.GraphQL.Context
             {
                 if (typeof(GraphQLSet).IsAssignableFrom(member.Type))
                 {
-                    typeAccessor[this, member.Name] = TypeAccessor.Create(member.Type).CreateNew();
-                    if (typeAccessor[this, member.Name] is GraphQLSet memberSet)
-                    {
-                        memberSet.ConnectionString = connectionString;
-                    }
+                    var setProperty = typeAccessor[this, member.Name];
+                    setProperty = TypeAccessor.Create(member.Type).CreateNew();
+
+                    var grapQLSetProperty = setProperty as GraphQLSet;
+                    grapQLSetProperty.GraphQLContext = this;
+                    grapQLSetProperty.ConnectionString = connectionString;
+
+                    typeAccessor[this, member.Name] = setProperty;
                 }
             }
         }
