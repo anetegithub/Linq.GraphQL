@@ -1,5 +1,6 @@
 namespace Linq.GraphQL.Demo
 {
+    using Linq.QueryPatcher;
     using Newtonsoft.Json;
     using System;
     using System.Linq;
@@ -25,7 +26,12 @@ namespace Linq.GraphQL.Demo
                         user = new { p.User.UserName },
                         p.Created
                     }).Where(p => !p.Body.Contains("hello"))
-                }).Where(x => x.Id > 1);
+                }).Where(x => x.Id > 1)
+                .WithAccess(x =>
+                {
+                    Console.WriteLine("access");
+                    return true;
+                });
 
                 Console.WriteLine("sync?");
                 bool typed = false;
